@@ -1,0 +1,9 @@
+{
+  "name": "design-docs-plugin",
+  "version": "1.0.0",
+  "description": "Pre-coding documentation skill: grills the user one question at a time, then produces the docs/ folder structure (overview.md, data_model.md, Mermaid flow diagram, and ADR files).",
+  "author": {
+    "name": "harm-schmitz",
+    "email": "harm.schmitz@acture.nl"
+  }
+}
