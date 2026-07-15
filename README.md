@@ -37,6 +37,12 @@ Alternatives: `winget install Anthropic.ClaudeCode` on Windows, or npm (`npm ins
 
 If `claude` still isn't found right after installing, close and reopen your terminal so it picks up the updated PATH. Then verify with `claude --version`. See the [official install docs](https://code.claude.com/docs/en/setup) if you hit trouble.
 
+> **Windows PATH warning after `irm` install?** If the installer prints *"Native installation exists but `C:\Users\<you>\.local\bin` is not in your PATH"*, the install worked — that folder just isn't on your PATH yet, so `claude` won't be found. Add it once in PowerShell, then open a **new** terminal:
+> ```powershell
+> [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path","User") + ";$env:USERPROFILE\.local\bin", "User")
+> ```
+> (Or add the path via System Properties → Environment Variables → Edit User PATH, as the installer message describes.)
+
 Then sign in once:
 
 ```
