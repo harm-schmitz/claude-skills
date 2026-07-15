@@ -153,6 +153,17 @@ Instead of everyone running the commands above, you can commit the marketplace +
 
 > Auto-update runs in the background a short, random delay after Claude Code starts (up to ~10 minutes) and applies at the next launch — so it's automatic, but not instantaneous. Third-party marketplaces have auto-update **off** by default, which is why the `autoUpdate` flag above is what turns it on.
 
+### Which `settings.json` to put it in
+
+The exact same block works at either scope — pick based on who you want it to cover:
+
+| File | Scope | Use when |
+| --- | --- | --- |
+| `<repo>/.claude/settings.json` | **Project** — checked into a repo, applies to anyone who opens it | You want your whole team to get the plugin automatically |
+| `~/.claude/settings.json` | **User-global** — applies to every project on *your* machine | You just want it installed everywhere for yourself, no per-repo setup |
+
+If both define it, the project file wins for that repo (project settings override user settings). There's also `~/.claude/settings.local.json` for machine-specific overrides you don't want to commit. So a common personal setup is simply to drop the block into your global `~/.claude/settings.json` once and never think about it again — you'll get the plugin (and, with `autoUpdate`, the latest commit) in every project.
+
 ## Contributing a new plugin or skill
 
 1. Add a plugin folder under `plugins/<your-plugin>/` with a `.claude-plugin/plugin.json` manifest and your `skills/`, `commands/`, `agents/`, or `hooks/` inside it.
