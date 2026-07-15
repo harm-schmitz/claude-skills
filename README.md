@@ -63,6 +63,10 @@ Start the interactive CLI by running `claude` in a terminal, then type these at 
 
 `harm-schmitz/claude-skills` is GitHub `owner/repo` shorthand. If you cloned the repo locally instead, you can point at the folder: `/plugin marketplace add /path/to/claude-skills`.
 
+> **`Command 'git' not found or is in an unsafe location (current directory)`?** This bites Windows users who installed Git for Windows as a *per-user* install (git.exe under `C:\Users\<you>\AppData\Local\Programs\Git\...`) **and** started the CLI from their home folder. Claude Code refuses to run a `git` that resolves from inside the current directory, and your home folder is an ancestor of that git install, so a legitimate git looks "unsafe." Git itself is fine — `git --version` still works. Two fixes:
+> - **Quick:** start the CLI from an actual project folder instead of your home directory (e.g. `cd C:\Users\<you>\Documents\projects`), then re-run the `/plugin marketplace add` command. Any real subfolder works because the AppData git path isn't underneath it.
+> - **Permanent:** reinstall Git for Windows **system-wide** so git.exe lives at `C:\Program Files\Git\cmd\git.exe`, outside your user tree. Then it's never "under" a home-based working directory.
+
 **2. Install the plugin:**
 
 ```
@@ -72,6 +76,8 @@ Start the interactive CLI by running `claude` in a terminal, then type these at 
 The `@claude-skills` suffix is the marketplace name (from `.claude-plugin/marketplace.json`), not the repo name — they happen to match here.
 
 **3. Restart Claude Code** if prompted, so the skill loads.
+
+The folder you run these commands from does **not** scope where the skill works — it only matters for satisfying the git check above. Marketplaces and installed plugins are recorded in your user-global config (`~/.claude`), so once installed the skill is available in **every** project on that machine, no matter which directory you installed it from.
 
 That's it. You can also just run `/plugin`, browse to the `claude-skills` marketplace, and install interactively if you prefer a menu over typing.
 
