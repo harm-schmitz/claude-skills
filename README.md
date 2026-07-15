@@ -132,7 +132,7 @@ Because this marketplace pins no version (see [Contributing](#contributing-a-new
 
 ## Optional: auto-install for the whole team
 
-Instead of everyone running the commands above, you can commit the marketplace + plugin into a project's `.claude/settings.json` so anyone who opens that repo gets prompted to trust and install it automatically. With `"autoUpdate": true`, teammates also stay on the latest commit without ever running an update command:
+Instead of everyone running the commands above, you can commit the marketplace + plugin into the global or a project's `.claude/settings.json` so anyone who opens that repo gets prompted to trust and install it automatically. With `"autoUpdate": true`, teammates also stay on the latest commit without ever running an update command:
 
 ```json
 {
