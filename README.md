@@ -1,20 +1,89 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# claude-skills
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+A team marketplace of [Claude Code](https://docs.claude.com/en/docs/claude-code) plugins and skills.
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+Add the marketplace once, then install any plugin from it. Right now it ships:
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+| Plugin | What it gives you |
+| --- | --- |
+| `design-docs-plugin` | The `design-docs` skill — grills you one question at a time to capture design decisions, then writes a full `docs/` folder (overview, data model, Mermaid flow diagram, ADRs) *before* you write any code. |
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+## Prerequisites
+
+- Claude Code installed and signed in (`claude` in your terminal, or the VS Code / JetBrains extension).
+- Access to this GitHub repo: `harm-schmitz/claude-skills`.
+
+## Install
+
+Run these inside a Claude Code session (type them at the prompt).
+
+**1. Add this marketplace** (only needed once per machine):
+
+```
+/plugin marketplace add harm-schmitz/claude-skills
+```
+
+`harm-schmitz/claude-skills` is GitHub `owner/repo` shorthand. If you cloned the repo locally instead, you can point at the folder: `/plugin marketplace add /path/to/claude-skills`.
+
+**2. Install the plugin:**
+
+```
+/plugin install design-docs-plugin@claude-skills
+```
+
+The `@claude-skills` suffix is the marketplace name (from `.claude-plugin/marketplace.json`), not the repo name — they happen to match here.
+
+**3. Restart Claude Code** if prompted, so the skill loads.
+
+That's it. You can also just run `/plugin`, browse to the `claude-skills` marketplace, and install interactively if you prefer a menu over typing.
+
+## Use it
+
+Once installed, the `design-docs` skill activates automatically at the start of a new project or feature — say something like *"I want to build X"* or *"let's design a new flow"*. You can also invoke it explicitly:
+
+```
+/design-docs
+```
+
+## Update
+
+Pull the latest plugin versions from the marketplace with:
+
+```
+/plugin marketplace update claude-skills
+```
+
+## Uninstall / remove
+
+```
+/plugin uninstall design-docs-plugin@claude-skills
+/plugin marketplace remove claude-skills
+```
+
+## Optional: auto-install for the whole team
+
+Instead of everyone running the commands above, you can commit the marketplace + plugin into a project's `.claude/settings.json` so anyone who opens that repo gets prompted to trust and install it automatically:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "claude-skills": {
+      "source": {
+        "source": "github",
+        "repo": "harm-schmitz/claude-skills"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "design-docs-plugin@claude-skills": true
+  }
+}
+```
+
+## Contributing a new plugin or skill
+
+1. Add a plugin folder under `plugins/<your-plugin>/` with a `.claude-plugin/plugin.json` manifest and your `skills/`, `commands/`, `agents/`, or `hooks/` inside it.
+2. Register it in the top-level [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json) `plugins` array.
+3. Open a PR. Once merged, teammates get it via `/plugin marketplace update claude-skills`.
+
+See the [Claude Code plugins docs](https://docs.claude.com/en/docs/claude-code/plugins) and [plugin marketplaces docs](https://docs.claude.com/en/docs/claude-code/plugin-marketplaces) for manifest details.
