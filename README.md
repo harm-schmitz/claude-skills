@@ -8,14 +8,46 @@ Add the marketplace once, then install any plugin from it. Right now it ships:
 | --- | --- |
 | `design-docs-plugin` | The `design-docs` skill — grills you one question at a time to capture design decisions, then writes a full `docs/` folder (overview, data model, Mermaid flow diagram, ADRs) *before* you write any code. |
 
-## Prerequisites
+## Prerequisites: the Claude Code CLI
 
-- Claude Code installed and signed in (`claude` in your terminal, or the VS Code / JetBrains extension).
-- Access to this GitHub repo: `harm-schmitz/claude-skills`.
+Plugins are installed with the `/plugin` command, which **only works in the interactive terminal CLI** (`claude` in a terminal). The VS Code / JetBrains extensions run a bundled copy of Claude Code but do **not** expose the `/plugin` command — so even if you use the IDE extension day to day, you need the CLI installed to add this marketplace.
 
-## Install
+Check whether you already have it:
 
-Run these inside a Claude Code session (type them at the prompt).
+```
+claude --version
+```
+
+If that says "not found", install it. The **native installer is recommended** (it auto-updates in the background) — pick the line for your shell:
+
+- **Windows PowerShell:**
+  ```
+  irm https://claude.ai/install.ps1 | iex
+  ```
+- **Windows CMD:**
+  ```
+  curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
+  ```
+- **macOS / Linux / WSL:**
+  ```
+  curl -fsSL https://claude.ai/install.sh | bash
+  ```
+
+Alternatives: `winget install Anthropic.ClaudeCode` on Windows, or npm (`npm install -g @anthropic-ai/claude-code`) if you already have [Node.js](https://nodejs.org) 22+.
+
+If `claude` still isn't found right after installing, close and reopen your terminal so it picks up the updated PATH. Then verify with `claude --version`. See the [official install docs](https://code.claude.com/docs/en/setup) if you hit trouble.
+
+Then sign in once:
+
+```
+claude
+```
+
+You also need access to this GitHub repo: `harm-schmitz/claude-skills`.
+
+## Install the plugin
+
+Start the interactive CLI by running `claude` in a terminal, then type these at the prompt.
 
 **1. Add this marketplace** (only needed once per machine):
 
