@@ -13,6 +13,11 @@
       "name": "design-docs-plugin",
       "source": "./plugins/design-docs-plugin",
       "description": "Grills you one question at a time to capture design decisions, then writes a full docs/ folder (overview, data model, Mermaid flow, ADRs) before you write any code."
+    },
+    {
+      "name": "language-guide-plugin",
+      "source": "./plugins/language-guide-plugin",
+      "description": "Applies a shared writing-style guide (plain, B2-level English) whenever documentation prose is written or reviewed — wikis, READMEs, PR descriptions, ADRs, design docs."
     }
   ]
 }

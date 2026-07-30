@@ -1,0 +1,9 @@
+{
+  "name": "language-guide-plugin",
+  "version": "1.0.0",
+  "description": "Applies a shared writing-style guide (plain, B2-level English) whenever documentation prose is written or reviewed — wikis, READMEs, PR descriptions, ADRs, design docs.",
+  "author": {
+    "name": "harm-schmitz",
+    "email": "harm.schmitz@acture.nl"
+  }
+}

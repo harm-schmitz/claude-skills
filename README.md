@@ -91,7 +91,7 @@ Once installed, the `design-docs` skill activates automatically at the start of 
 
 ## Update
 
-Pull the latest plugin versions from the marketplace with:
+Third-party marketplaces like this one don't auto-update by default — that's a Claude Code safety default, not something this repo can turn on for you. Turn it on once via `/plugin` → **Marketplaces** → `claude-skills` → **Enable auto-update**. Until you do, pull the latest plugin versions manually with:
 
 ```
 /plugin marketplace update claude-skills
@@ -102,26 +102,6 @@ Pull the latest plugin versions from the marketplace with:
 ```
 /plugin uninstall design-docs-plugin@claude-skills
 /plugin marketplace remove claude-skills
-```
-
-## Optional: auto-install for the whole team
-
-Instead of everyone running the commands above, you can commit the marketplace + plugin into a project's `.claude/settings.json` so anyone who opens that repo gets prompted to trust and install it automatically:
-
-```json
-{
-  "extraKnownMarketplaces": {
-    "claude-skills": {
-      "source": {
-        "source": "github",
-        "repo": "harm-schmitz/claude-skills"
-      }
-    }
-  },
-  "enabledPlugins": {
-    "design-docs-plugin@claude-skills": true
-  }
-}
 ```
 
 ## Contributing a new plugin or skill

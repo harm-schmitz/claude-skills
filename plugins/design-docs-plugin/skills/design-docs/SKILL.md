@@ -116,6 +116,11 @@ Once grilling is complete, write the files directly into `docs/` in the
 user's project using the Write tool. Do not present them as markdown code
 blocks for the user to copy — write them straight to disk.
 
+Before writing prose, invoke the `language-guide` skill and apply its
+heuristics. It targets B2-level English — flag false-friend words,
+unexplained jargon compounds, and metaphorical abstract nouns, and write
+plain alternatives instead.
+
 ### If docs/ already exists
 
 Don't regenerate everything from scratch. Diff the existing docs against what
