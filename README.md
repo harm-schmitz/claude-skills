@@ -91,7 +91,7 @@ Once installed, the `design-docs` skill activates automatically at the start of 
 
 ## Update
 
-Third-party marketplaces like this one don't auto-update by default — that's a Claude Code safety default, not something this repo can turn on for you. Turn it on once via `/plugin` → **Marketplaces** → `claude-skills` → **Enable auto-update**. Until you do, pull the latest plugin versions manually with:
+Third-party marketplaces like this one don't auto-update by default — that's a Claude Code safety default, not something this repo can turn on for you. Pull the latest plugin versions manually with:
 
 ```
 /plugin marketplace update claude-skills
@@ -100,7 +100,7 @@ Third-party marketplaces like this one don't auto-update by default — that's a
 
 The first refreshes the marketplace catalog from GitHub; the second installs the latest commit of the plugin.
 
-Better: enable background auto-updates so you never have to. See [auto-install for the whole team](#optional-auto-install-for-the-whole-team) below — with `"autoUpdate": true` set, Claude Code pulls new commits on its own (shortly after startup, applied at the next launch).
+To skip the manual step, toggle it once via `/plugin` → **Marketplaces** → `claude-skills` → **Enable auto-update**. This is a **per-person** setting — there's no way to turn it on for the whole team from this repo. You may see docs or examples showing an `"autoUpdate": true` field inside `extraKnownMarketplaces` in `settings.json` — that only takes effect in Claude Code **Enterprise managed settings** (an org-admin-only config, separate from any repo). Hand-editing it into your own `~/.claude/settings.json` or a project's `.claude/settings.json` does nothing; the `/plugin` toggle above is the only way that actually works for a normal (non-Enterprise) setup.
 
 ## How plugins and updates work under the hood
 
@@ -128,18 +128,30 @@ Because this marketplace pins no version (see [Contributing](#contributing-a-new
 /plugin marketplace remove claude-skills
 ```
 
-> Auto-update runs in the background a short, random delay after Claude Code starts (up to ~10 minutes) and applies at the next launch — so it's automatic, but not instantaneous. Third-party marketplaces have auto-update **off** by default, which is why the `autoUpdate` flag above is what turns it on.
+## Optional: skip the manual install steps
 
-### Which `settings.json` to put it in
+This marketplace's skills are general-purpose — not tied to any one codebase — so the natural place to declare this is your own **user-level** `~/.claude/settings.json`: set it once and it applies to every project on your machine, the same as a manual install already does.
 
-The exact same block works at either scope — pick based on who you want it to cover:
+```json
+{
+  "extraKnownMarketplaces": {
+    "claude-skills": {
+      "source": {
+        "source": "github",
+        "repo": "harm-schmitz/claude-skills"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "design-docs-plugin@claude-skills": true,
+    "language-guide-plugin@claude-skills": true
+  }
+}
+```
 
-| File | Scope | Use when |
-| --- | --- | --- |
-| `<repo>/.claude/settings.json` | **Project** — checked into a repo, applies to anyone who opens it | You want your whole team to get the plugin automatically |
-| `~/.claude/settings.json` | **User-global** — applies to every project on *your* machine | You just want it installed everywhere for yourself, no per-repo setup |
+This still prompts you to trust and confirm the install the first time Claude Code starts with this config present — it's not silent. It also only automates *installing* — it has no effect on auto-*update* (see the [Update](#update) section above); that's a separate, per-person toggle regardless of whether you use this block.
 
-If both define it, the project file wins for that repo (project settings override user settings). There's also `~/.claude/settings.local.json` for machine-specific overrides you don't want to commit. So a common personal setup is simply to drop the block into your global `~/.claude/settings.json` once and never think about it again — you'll get the plugin (and, with `autoUpdate`, the latest commit) in every project.
+The same block also works in a specific project's `.claude/settings.json` instead of your user one — but that only makes sense if you want to *require* these skills for everyone who works on one particular repo, regardless of their personal setup (e.g. a project-specific lint plugin baked into that repo's contribution rules). That's not really this marketplace's situation, so prefer the user-level file above unless you have a specific repo that needs to force it.
 
 ## Contributing a new plugin or skill
 
