@@ -100,7 +100,22 @@ Third-party marketplaces like this one don't auto-update by default — that's a
 
 The first refreshes the marketplace catalog from GitHub; the second installs the latest commit of the plugin.
 
-To skip the manual step, toggle it once via `/plugin` → **Marketplaces** → `claude-skills` → **Enable auto-update**. This is a **per-person** setting — there's no way to turn it on for the whole team from this repo. You may see docs or examples showing an `"autoUpdate": true` field inside `extraKnownMarketplaces` in `settings.json` — that only takes effect in Claude Code **Enterprise managed settings** (an org-admin-only config, separate from any repo). Hand-editing it into your own `~/.claude/settings.json` or a project's `.claude/settings.json` does nothing; the `/plugin` toggle above is the only way that actually works for a normal (non-Enterprise) setup.
+To stop having to do this by hand, see [Enable auto-update](#enable-auto-update) below.
+
+## Enable auto-update
+
+Recommended, so you never have to run the manual commands above. This must be done in a **real terminal** running `claude` — it does **not** work from this chat, or from the VS Code/JetBrains extension in general (see [Prerequisites](#prerequisites-the-claude-code-cli)); `/plugin` simply isn't available there.
+
+1. In a terminal, run `claude`, then run `/plugin`.
+2. Use the **arrow keys** (not Tab) to navigate to **Marketplaces**, and press **Enter**.
+3. Arrow down to `claude-skills` and press **Enter**.
+4. Arrow down to **Enable auto-update** and press **Enter**.
+
+That's it — no confirmation screen; the menu just reflects the change.
+
+This is a **per-person** setting: everyone who wants it does this once, themselves. There's no way to turn it on for the whole team from this repo. You may also see docs or examples showing an `"autoUpdate": true` field inside `extraKnownMarketplaces` in `settings.json` — that only takes effect in Claude Code **Enterprise managed settings** (an org-admin-only config, separate from any repo). Hand-editing it into your own `~/.claude/settings.json` or a project's `.claude/settings.json` does nothing; the steps above are the only thing that actually works for a normal (non-Enterprise) setup.
+
+Once enabled, updates apply in the background: a `git pull` a few minutes after each session starts, with a notification to run `/reload-plugins`, or applied automatically on your next `claude` launch — not instant.
 
 ## How plugins and updates work under the hood
 
