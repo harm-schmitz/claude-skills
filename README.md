@@ -95,7 +95,31 @@ Third-party marketplaces like this one don't auto-update by default — that's a
 
 ```
 /plugin marketplace update claude-skills
+/plugin update design-docs-plugin@claude-skills
 ```
+
+The first refreshes the marketplace catalog from GitHub; the second installs the latest commit of the plugin.
+
+Better: enable background auto-updates so you never have to. See [auto-install for the whole team](#optional-auto-install-for-the-whole-team) below — with `"autoUpdate": true` set, Claude Code pulls new commits on its own (shortly after startup, applied at the next launch).
+
+## How plugins and updates work under the hood
+
+When you add and install a plugin, Claude Code keeps **two separate local copies** under `~/.claude/plugins/` (your user-global config — not the project folder you ran the command from):
+
+- **The marketplace clone** — `marketplaces/claude-skills/` is a real `git clone` of this GitHub repo. It's the *source*.
+- **The installed plugin** — `cache/claude-skills/design-docs-plugin/<version>/` is a plain, flat copy of just that plugin's files, materialized from the clone when you install or update. **This copy is what actually runs.**
+
+**Invoking the skill never touches GitHub.** `/design-docs` loads from the local cached copy — it works offline and pulls nothing. The network is only used during three git operations, each a fetch/pull on the marketplace clone:
+
+| Action | What it does |
+| --- | --- |
+| `/plugin marketplace add` | `git clone` the repo into `marketplaces/` |
+| `/plugin marketplace update` | `git pull` the clone — refreshes the *source*, but **not** the running copy |
+| background auto-update | the same `git pull`, on a timer a few minutes after startup |
+
+**Getting a new version = re-copying the cache from the freshly pulled clone.** That is what `/plugin update` (and auto-update) does. This is the reason `marketplace update` *alone* isn't enough: it advances the clone to the latest commit, but the cached copy the skill runs from stays frozen until an install/update re-materializes it. So either run both commands, or let `autoUpdate` handle it.
+
+Because this marketplace pins no version (see [Contributing](#contributing-a-new-plugin-or-skill)), a plugin's identity **is** its git commit. Every push to the default branch is a new "version," so "latest" always means the newest commit on GitHub as of the last pull.
 
 ## Uninstall / remove
 
@@ -104,10 +128,25 @@ Third-party marketplaces like this one don't auto-update by default — that's a
 /plugin marketplace remove claude-skills
 ```
 
+> Auto-update runs in the background a short, random delay after Claude Code starts (up to ~10 minutes) and applies at the next launch — so it's automatic, but not instantaneous. Third-party marketplaces have auto-update **off** by default, which is why the `autoUpdate` flag above is what turns it on.
+
+### Which `settings.json` to put it in
+
+The exact same block works at either scope — pick based on who you want it to cover:
+
+| File | Scope | Use when |
+| --- | --- | --- |
+| `<repo>/.claude/settings.json` | **Project** — checked into a repo, applies to anyone who opens it | You want your whole team to get the plugin automatically |
+| `~/.claude/settings.json` | **User-global** — applies to every project on *your* machine | You just want it installed everywhere for yourself, no per-repo setup |
+
+If both define it, the project file wins for that repo (project settings override user settings). There's also `~/.claude/settings.local.json` for machine-specific overrides you don't want to commit. So a common personal setup is simply to drop the block into your global `~/.claude/settings.json` once and never think about it again — you'll get the plugin (and, with `autoUpdate`, the latest commit) in every project.
+
 ## Contributing a new plugin or skill
 
 1. Add a plugin folder under `plugins/<your-plugin>/` with a `.claude-plugin/plugin.json` manifest and your `skills/`, `commands/`, `agents/`, or `hooks/` inside it.
 2. Register it in the top-level [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json) `plugins` array.
-3. Open a PR. Once merged, teammates get it via `/plugin marketplace update claude-skills`.
+3. Open a PR. Once merged, teammates get it via `/plugin marketplace update claude-skills` (or automatically, if they have `autoUpdate` on).
+
+> **Do not add a `version` field** to `plugin.json` or to the marketplace entry. This marketplace intentionally tracks latest by git commit — a pinned `version` freezes users on the cached copy until it's manually bumped, so new commits would silently fail to reach anyone.
 
 See the [Claude Code plugins docs](https://docs.claude.com/en/docs/claude-code/plugins) and [plugin marketplaces docs](https://docs.claude.com/en/docs/claude-code/plugin-marketplaces) for manifest details.
