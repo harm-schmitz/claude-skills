@@ -81,6 +81,24 @@ The folder you run these commands from does **not** scope where the skill works 
 
 That's it. You can also just run `/plugin`, browse to the `claude-skills` marketplace, and install interactively if you prefer a menu over typing.
 
+## Install another plugin from this marketplace
+
+Adding the marketplace and installing one plugin from it doesn't install the others — each plugin is a separate, explicit install. Here's the process, using `language-guide-plugin` as the example:
+
+1. Refresh the marketplace listing so it sees the new plugin:
+   ```
+   /plugin marketplace update claude-skills
+   ```
+2. Install the plugin (first-time install, since it's new — not an update):
+   ```
+   /plugin install language-guide-plugin@claude-skills
+   ```
+3. Reload plugins so the skill becomes active:
+   ```
+   /reload-plugins
+   ```
+4. Verify it's there — check that `language-guide-plugin:language-guide` shows up in the available skills, or just try it on a doc or PR description.
+
 ## Use it
 
 Once installed, the `design-docs` skill activates automatically at the start of a new project or feature — say something like *"I want to build X"* or *"let's design a new flow"*. You can also invoke it explicitly:
