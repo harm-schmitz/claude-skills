@@ -5,8 +5,7 @@
     "email": "harm.schmitz@acture.nl"
   },
   "metadata": {
-    "description": "Team marketplace of Claude Code plugins and skills.",
-    "version": "1.0.0"
+    "description": "Team marketplace of Claude Code plugins and skills."
   },
   "plugins": [
     {
