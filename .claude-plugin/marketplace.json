@@ -17,6 +17,11 @@
       "name": "language-guide-plugin",
       "source": "./plugins/language-guide-plugin",
       "description": "Applies a shared writing-style guide (plain, B2-level English) whenever documentation prose is written or reviewed — wikis, READMEs, PR descriptions, ADRs, design docs."
+    },
+    {
+      "name": "code-review-plugin",
+      "source": "./plugins/code-review-plugin",
+      "description": "Explicit, opt-in deep-audit review mode: an extremely strict maintainability review for abstraction quality, giant files, and spaghetti-condition growth."
     }
   ]
 }
