@@ -16,7 +16,8 @@ plugins/<plugin-name>/
 ├── .claude-plugin/plugin.json            # plugin manifest (name, version, description, author)
 ├── skills/<skill-name>/SKILL.md          # skill definition: YAML frontmatter (name, description) + instructions body
 ├── skills/<skill-name>/assets/           # templates/static files the skill copies or fills in when it runs
-├── commands/  agents/  hooks/            # optional, not currently used by any plugin
+├── commands/<command-name>.md            # optional slash command: frontmatter (description) + prompt body
+├── agents/  hooks/                       # optional, not currently used by any plugin
 ```
 
 The marketplace manifest's `plugins[].source` is a relative path to the plugin folder; `plugins[].name` must match the plugin's own `.claude-plugin/plugin.json` `name`. Installed as `<plugin-name>@<marketplace-name>` (e.g. `design-docs-plugin@claude-skills`).
@@ -38,7 +39,9 @@ There's no automated test suite. To check a change actually works, install/reloa
 /plugin install <plugin-name>@claude-skills
 ```
 
-Restart Claude Code if prompted, then trigger the skill (by its natural-language description or its explicit `/<skill-name>` command) and confirm the behavior matches the SKILL.md instructions.
+Restart Claude Code if prompted, then trigger the skill and confirm the behavior matches the SKILL.md instructions.
+
+Note on invocation names: a plugin **skill** is only reachable as `/<plugin-name>:<skill-name>` (e.g. `/design-docs-plugin:design-docs`) — a bare `/<skill-name>` does not resolve. A short `/<name>` only exists if the plugin also ships `commands/<name>.md`.
 
 ## Existing plugin: design-docs-plugin
 
@@ -51,7 +54,7 @@ Key behaviors baked into the skill (preserve these if editing SKILL.md):
 - Only records a decision as an ADR when it's hard to reverse, non-obvious, or the result of a real tradeoff — not every implementation detail (target: 3-6 ADRs per session).
 - Writes files straight to disk with the Write tool — never presents doc content as copyable markdown blocks.
 
-The `description` field in SKILL.md frontmatter is what makes Claude Code auto-invoke the skill (in addition to the explicit `/design-docs` command) — it must contain concrete phrases a user would actually say (e.g. "I want to build X", "let's design X"), not an abstract summary of what the skill does. Keep this in mind for any new skill added to this marketplace, not just this one.
+The `description` field in SKILL.md frontmatter is what makes Claude Code auto-invoke the skill (in addition to `commands/design-docs.md`, which exists so the short `/design-docs` works alongside the skill's own `/design-docs-plugin:design-docs`) — it must contain concrete phrases a user would actually say (e.g. "I want to build X", "let's design X"), not an abstract summary of what the skill does. Keep this in mind for any new skill added to this marketplace, not just this one.
 
 `design-docs`'s step 3 (writing the docs) invokes the `language-guide` skill before writing prose — see below.
 
