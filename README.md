@@ -211,6 +211,8 @@ The same block also works in a specific project's `.claude/settings.json` instea
 2. Register it in the top-level [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json) `plugins` array.
 3. Open a PR. Once merged, teammates get it via `/plugin marketplace update claude-skills` (or automatically, if they have `autoUpdate` on).
 
+> **Make changes in Azure DevOps only.** A pipeline ([`azure-pipelines.yml`](azure-pipelines.yml)) copies every push to `main` to a GitHub mirror (`harm-schmitz/claude-skills`). The copy only goes one way: a commit made directly on GitHub is never brought back, and it makes the mirror push fail until someone merges it into this repo.
+
 > **Do not add a `version` field** to `plugin.json` or to the marketplace entry. This marketplace intentionally tracks latest by git commit — a pinned `version` freezes users on the cached copy until it's manually bumped, so new commits would silently fail to reach anyone.
 
 See the [Claude Code plugins docs](https://docs.claude.com/en/docs/claude-code/plugins) and [plugin marketplaces docs](https://docs.claude.com/en/docs/claude-code/plugin-marketplaces) for manifest details.

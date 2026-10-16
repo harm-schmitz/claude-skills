@@ -1,0 +1,20 @@
+# One-way mirror of main to github.com/harm-schmitz/claude-skills, for installing the skills
+# without Azure DevOps access. Nothing is ever pulled back from GitHub.
+trigger:
+  branches:
+    include:
+      - main
+
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - checkout: self
+    fetchDepth: 0
+
+  - script: git push "https://x-access-token:${GITHUB_MIRROR_TOKEN}@github.com/harm-schmitz/claude-skills.git" HEAD:refs/heads/main
+    displayName: Push main to GitHub
+    env:
+      GITHUB_MIRROR_TOKEN: $(GITHUB_MIRROR_TOKEN)
