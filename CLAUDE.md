@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-A Claude Code **plugin marketplace** (`harm-schmitz/claude-skills`) — no application code, no build/test/lint tooling. It's a thin registry (`.claude-plugin/marketplace.json`) pointing at one or more plugin folders under `plugins/`, each of which bundles skills (and potentially commands/agents/hooks, though none exist yet).
+A Claude Code **plugin marketplace** (Azure DevOps: `klout7/Acture Specialties Products/claude-skills`) — no application code, no build/test/lint tooling. It's a thin registry (`.claude-plugin/marketplace.json`) pointing at one or more plugin folders under `plugins/`, each of which bundles skills (and potentially commands/agents/hooks, though none exist yet).
 
 There is nothing to build, lint, or test here. "Development" means editing Markdown skill files and JSON manifests, then verifying they load correctly via the `/plugin` command in an interactive `claude` session.
 

@@ -50,7 +50,15 @@ Then sign in once:
 claude
 ```
 
-You also need access to this GitHub repo: `harm-schmitz/claude-skills`.
+You also need read access to this Azure DevOps repo: `claude-skills` in the `klout7` organisation, project `Acture Specialties Products`.
+
+Claude Code runs `git` with login prompts turned off, so it can only use a credential that Git Credential Manager has already stored. Sign in once from a normal terminal before you add the marketplace (a browser window may open):
+
+```
+git ls-remote "https://dev.azure.com/klout7/Acture%20Specialties%20Products/_git/claude-skills"
+```
+
+If that prints a commit hash for `refs/heads/main`, you are ready.
 
 ## Install the plugin
 
@@ -59,10 +67,18 @@ Start the interactive CLI by running `claude` in a terminal, then type these at 
 **1. Add this marketplace** (only needed once per machine):
 
 ```
-/plugin marketplace add harm-schmitz/claude-skills
+/plugin marketplace add https://dev.azure.com/klout7/Acture%20Specialties%20Products/_git/claude-skills
 ```
 
-`harm-schmitz/claude-skills` is GitHub `owner/repo` shorthand. If you cloned the repo locally instead, you can point at the folder: `/plugin marketplace add /path/to/claude-skills`.
+Claude Code treats any URL that contains `/_git/` as a git repo, so the Azure DevOps URL works as-is, without a `.git` suffix. If you cloned the repo locally instead, you can point at the folder: `/plugin marketplace add /path/to/claude-skills`.
+
+> **Moving over from the old GitHub marketplace (`harm-schmitz/claude-skills`)?** You can only have one marketplace called `claude-skills`, so remove the GitHub one first. Removing a marketplace also uninstalls its plugins, so reinstall them after adding the new one:
+> ```
+> /plugin marketplace remove claude-skills
+> /plugin marketplace add https://dev.azure.com/klout7/Acture%20Specialties%20Products/_git/claude-skills
+> /plugin install design-docs-plugin@claude-skills
+> ```
+> If you enabled auto-update for the old marketplace, enable it again for the new one (see [Enable auto-update](#enable-auto-update)).
 
 > **`Command 'git' not found or is in an unsafe location (current directory)`?** This bites Windows users who installed Git for Windows as a *per-user* install (git.exe under `C:\Users\<you>\AppData\Local\Programs\Git\...`) **and** started the CLI from their home folder. Claude Code refuses to run a `git` that resolves from inside the current directory, and your home folder is an ancestor of that git install, so a legitimate git looks "unsafe." Git itself is fine — `git --version` still works. Two fixes:
 > - **Quick:** start the CLI from an actual project folder instead of your home directory (e.g. `cd C:\Users\<you>\Documents\projects`), then re-run the `/plugin marketplace add` command. Any real subfolder works because the AppData git path isn't underneath it.
@@ -117,7 +133,7 @@ Third-party marketplaces like this one don't auto-update by default — that's a
 /plugin update design-docs-plugin@claude-skills
 ```
 
-The first refreshes the marketplace catalog from GitHub; the second installs the latest commit of the plugin.
+The first refreshes the marketplace catalog from Azure DevOps; the second installs the latest commit of the plugin.
 
 To stop having to do this by hand, see [Enable auto-update](#enable-auto-update) below.
 
@@ -140,10 +156,10 @@ Once enabled, updates apply in the background: a `git pull` a few minutes after 
 
 When you add and install a plugin, Claude Code keeps **two separate local copies** under `~/.claude/plugins/` (your user-global config — not the project folder you ran the command from):
 
-- **The marketplace clone** — `marketplaces/claude-skills/` is a real `git clone` of this GitHub repo. It's the *source*.
+- **The marketplace clone** — `marketplaces/claude-skills/` is a real `git clone` of this Azure DevOps repo. It's the *source*.
 - **The installed plugin** — `cache/claude-skills/design-docs-plugin/<version>/` is a plain, flat copy of just that plugin's files, materialized from the clone when you install or update. **This copy is what actually runs.**
 
-**Invoking the skill never touches GitHub.** `/design-docs` loads from the local cached copy — it works offline and pulls nothing. The network is only used during three git operations, each a fetch/pull on the marketplace clone:
+**Invoking the skill never touches Azure DevOps.** `/design-docs` loads from the local cached copy — it works offline and pulls nothing. The network is only used during three git operations, each a fetch/pull on the marketplace clone:
 
 | Action | What it does |
 | --- | --- |
@@ -153,7 +169,9 @@ When you add and install a plugin, Claude Code keeps **two separate local copies
 
 **Getting a new version = re-copying the cache from the freshly pulled clone.** That is what `/plugin update` (and auto-update) does. This is the reason `marketplace update` *alone* isn't enough: it advances the clone to the latest commit, but the cached copy the skill runs from stays frozen until an install/update re-materializes it. So either run both commands, or let `autoUpdate` handle it.
 
-Because this marketplace pins no version (see [Contributing](#contributing-a-new-plugin-or-skill)), a plugin's identity **is** its git commit. Every push to the default branch is a new "version," so "latest" always means the newest commit on GitHub as of the last pull.
+Because this marketplace pins no version (see [Contributing](#contributing-a-new-plugin-or-skill)), a plugin's identity **is** its git commit. Every push to the default branch is a new "version," so "latest" always means the newest commit on Azure DevOps as of the last pull.
+
+Background updates cannot ask you to log in. If your stored Azure DevOps credential expires, the update fails quietly; run the `git ls-remote` command from [Prerequisites](#prerequisites-the-claude-code-cli) again to refresh it.
 
 ## Uninstall / remove
 
@@ -171,8 +189,8 @@ This marketplace's skills are general-purpose — not tied to any one codebase �
   "extraKnownMarketplaces": {
     "claude-skills": {
       "source": {
-        "source": "github",
-        "repo": "harm-schmitz/claude-skills"
+        "source": "git",
+        "url": "https://dev.azure.com/klout7/Acture%20Specialties%20Products/_git/claude-skills"
       }
     }
   },
