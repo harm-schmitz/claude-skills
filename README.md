@@ -7,6 +7,7 @@ Add the marketplace once, then install any plugin from it. Right now it ships:
 | Plugin | What it gives you |
 | --- | --- |
 | `design-docs-plugin` | The `design-docs` skill — grills you one question at a time to capture design decisions, then writes a full `docs/` folder (overview, data model, Mermaid flow diagram, ADRs) *before* you write any code. |
+| `wiki-interviewer-plugin` | The `wiki-interviewer` skill — interviews you one question at a time to write wikis, READMEs, ADRs, and runbooks from your own words instead of generating them from the code alone. |
 
 ## Prerequisites: the Claude Code CLI
 
