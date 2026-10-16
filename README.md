@@ -1,0 +1,198 @@
+# claude-skills
+
+A team marketplace of [Claude Code](https://docs.claude.com/en/docs/claude-code) plugins and skills.
+
+Add the marketplace once, then install any plugin from it. Right now it ships:
+
+| Plugin | What it gives you |
+| --- | --- |
+| `design-docs-plugin` | The `design-docs` skill — grills you one question at a time to capture design decisions, then writes a full `docs/` folder (overview, data model, Mermaid flow diagram, ADRs) *before* you write any code. |
+| `wiki-interviewer-plugin` | The `wiki-interviewer` skill — interviews you one question at a time to write wikis, READMEs, ADRs, and runbooks from your own words instead of generating them from the code alone. |
+
+## Prerequisites: the Claude Code CLI
+
+Plugins are installed with the `/plugin` command, which **only works in the interactive terminal CLI** (`claude` in a terminal). The VS Code / JetBrains extensions run a bundled copy of Claude Code but do **not** expose the `/plugin` command — so even if you use the IDE extension day to day, you need the CLI installed to add this marketplace.
+
+Check whether you already have it:
+
+```
+claude --version
+```
+
+If that says "not found", install it. The **native installer is recommended** (it auto-updates in the background) — pick the line for your shell:
+
+- **Windows PowerShell:**
+  ```
+  irm https://claude.ai/install.ps1 | iex
+  ```
+- **Windows CMD:**
+  ```
+  curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
+  ```
+- **macOS / Linux / WSL:**
+  ```
+  curl -fsSL https://claude.ai/install.sh | bash
+  ```
+
+Alternatives: `winget install Anthropic.ClaudeCode` on Windows, or npm (`npm install -g @anthropic-ai/claude-code`) if you already have [Node.js](https://nodejs.org) 22+.
+
+If `claude` still isn't found right after installing, close and reopen your terminal so it picks up the updated PATH. Then verify with `claude --version`. See the [official install docs](https://code.claude.com/docs/en/setup) if you hit trouble.
+
+> **Windows PATH warning after `irm` install?** If the installer prints *"Native installation exists but `C:\Users\<you>\.local\bin` is not in your PATH"*, the install worked — that folder just isn't on your PATH yet, so `claude` won't be found. Add it once in PowerShell, then open a **new** terminal:
+> ```powershell
+> [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path","User") + ";$env:USERPROFILE\.local\bin", "User")
+> ```
+> (Or add the path via System Properties → Environment Variables → Edit User PATH, as the installer message describes.)
+
+Then sign in once:
+
+```
+claude
+```
+
+You also need access to this GitHub repo: `harm-schmitz/claude-skills`.
+
+## Install the plugin
+
+Start the interactive CLI by running `claude` in a terminal, then type these at the prompt.
+
+**1. Add this marketplace** (only needed once per machine):
+
+```
+/plugin marketplace add harm-schmitz/claude-skills
+```
+
+`harm-schmitz/claude-skills` is GitHub `owner/repo` shorthand. If you cloned the repo locally instead, you can point at the folder: `/plugin marketplace add /path/to/claude-skills`.
+
+> **`Command 'git' not found or is in an unsafe location (current directory)`?** This bites Windows users who installed Git for Windows as a *per-user* install (git.exe under `C:\Users\<you>\AppData\Local\Programs\Git\...`) **and** started the CLI from their home folder. Claude Code refuses to run a `git` that resolves from inside the current directory, and your home folder is an ancestor of that git install, so a legitimate git looks "unsafe." Git itself is fine — `git --version` still works. Two fixes:
+> - **Quick:** start the CLI from an actual project folder instead of your home directory (e.g. `cd C:\Users\<you>\Documents\projects`), then re-run the `/plugin marketplace add` command. Any real subfolder works because the AppData git path isn't underneath it.
+> - **Permanent:** reinstall Git for Windows **system-wide** so git.exe lives at `C:\Program Files\Git\cmd\git.exe`, outside your user tree. Then it's never "under" a home-based working directory.
+
+**2. Install the plugin:**
+
+```
+/plugin install design-docs-plugin@claude-skills
+```
+
+The `@claude-skills` suffix is the marketplace name (from `.claude-plugin/marketplace.json`), not the repo name — they happen to match here.
+
+**3. Restart Claude Code** if prompted, so the skill loads.
+
+The folder you run these commands from does **not** scope where the skill works — it only matters for satisfying the git check above. Marketplaces and installed plugins are recorded in your user-global config (`~/.claude`), so once installed the skill is available in **every** project on that machine, no matter which directory you installed it from.
+
+That's it. You can also just run `/plugin`, browse to the `claude-skills` marketplace, and install interactively if you prefer a menu over typing.
+
+## Install another plugin from this marketplace
+
+Adding the marketplace and installing one plugin from it doesn't install the others — each plugin is a separate, explicit install. Here's the process, using `language-guide-plugin` as the example:
+
+1. Refresh the marketplace listing so it sees the new plugin:
+   ```
+   /plugin marketplace update claude-skills
+   ```
+2. Install the plugin (first-time install, since it's new — not an update):
+   ```
+   /plugin install language-guide-plugin@claude-skills
+   ```
+3. Reload plugins so the skill becomes active:
+   ```
+   /reload-plugins
+   ```
+4. Verify it's there — check that `language-guide-plugin:language-guide` shows up in the available skills, or just try it on a doc or PR description.
+
+## Use it
+
+Once installed, the `design-docs` skill activates automatically at the start of a new project or feature — say something like *"I want to build X"* or *"let's design a new flow"*. You can also invoke it explicitly:
+
+```
+/design-docs
+```
+
+## Update
+
+Third-party marketplaces like this one don't auto-update by default — that's a Claude Code safety default, not something this repo can turn on for you. Pull the latest plugin versions manually with:
+
+```
+/plugin marketplace update claude-skills
+/plugin update design-docs-plugin@claude-skills
+```
+
+The first refreshes the marketplace catalog from GitHub; the second installs the latest commit of the plugin.
+
+To stop having to do this by hand, see [Enable auto-update](#enable-auto-update) below.
+
+## Enable auto-update
+
+Recommended, so you never have to run the manual commands above. This must be done in a **real terminal** running `claude` — it does **not** work from this chat, or from the VS Code/JetBrains extension in general (see [Prerequisites](#prerequisites-the-claude-code-cli)); `/plugin` simply isn't available there.
+
+1. In a terminal, run `claude`, then run `/plugin`.
+2. Use the **arrow keys** (not Tab) to navigate to **Marketplaces**, and press **Enter**.
+3. Arrow down to `claude-skills` and press **Enter**.
+4. Arrow down to **Enable auto-update** and press **Enter**.
+
+That's it — no confirmation screen; the menu just reflects the change.
+
+This is a **per-person** setting: everyone who wants it does this once, themselves. There's no way to turn it on for the whole team from this repo. You may also see docs or examples showing an `"autoUpdate": true` field inside `extraKnownMarketplaces` in `settings.json` — that only takes effect in Claude Code **Enterprise managed settings** (an org-admin-only config, separate from any repo). Hand-editing it into your own `~/.claude/settings.json` or a project's `.claude/settings.json` does nothing; the steps above are the only thing that actually works for a normal (non-Enterprise) setup.
+
+Once enabled, updates apply in the background: a `git pull` a few minutes after each session starts, with a notification to run `/reload-plugins`, or applied automatically on your next `claude` launch — not instant.
+
+## How plugins and updates work under the hood
+
+When you add and install a plugin, Claude Code keeps **two separate local copies** under `~/.claude/plugins/` (your user-global config — not the project folder you ran the command from):
+
+- **The marketplace clone** — `marketplaces/claude-skills/` is a real `git clone` of this GitHub repo. It's the *source*.
+- **The installed plugin** — `cache/claude-skills/design-docs-plugin/<version>/` is a plain, flat copy of just that plugin's files, materialized from the clone when you install or update. **This copy is what actually runs.**
+
+**Invoking the skill never touches GitHub.** `/design-docs` loads from the local cached copy — it works offline and pulls nothing. The network is only used during three git operations, each a fetch/pull on the marketplace clone:
+
+| Action | What it does |
+| --- | --- |
+| `/plugin marketplace add` | `git clone` the repo into `marketplaces/` |
+| `/plugin marketplace update` | `git pull` the clone — refreshes the *source*, but **not** the running copy |
+| background auto-update | the same `git pull`, on a timer a few minutes after startup |
+
+**Getting a new version = re-copying the cache from the freshly pulled clone.** That is what `/plugin update` (and auto-update) does. This is the reason `marketplace update` *alone* isn't enough: it advances the clone to the latest commit, but the cached copy the skill runs from stays frozen until an install/update re-materializes it. So either run both commands, or let `autoUpdate` handle it.
+
+Because this marketplace pins no version (see [Contributing](#contributing-a-new-plugin-or-skill)), a plugin's identity **is** its git commit. Every push to the default branch is a new "version," so "latest" always means the newest commit on GitHub as of the last pull.
+
+## Uninstall / remove
+
+```
+/plugin uninstall design-docs-plugin@claude-skills
+/plugin marketplace remove claude-skills
+```
+
+## Optional: skip the manual install steps
+
+This marketplace's skills are general-purpose — not tied to any one codebase — so the natural place to declare this is your own **user-level** `~/.claude/settings.json`: set it once and it applies to every project on your machine, the same as a manual install already does.
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "claude-skills": {
+      "source": {
+        "source": "github",
+        "repo": "harm-schmitz/claude-skills"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "design-docs-plugin@claude-skills": true,
+    "language-guide-plugin@claude-skills": true
+  }
+}
+```
+
+This still prompts you to trust and confirm the install the first time Claude Code starts with this config present — it's not silent. It also only automates *installing* — it has no effect on auto-*update* (see the [Update](#update) section above); that's a separate, per-person toggle regardless of whether you use this block.
+
+The same block also works in a specific project's `.claude/settings.json` instead of your user one — but that only makes sense if you want to *require* these skills for everyone who works on one particular repo, regardless of their personal setup (e.g. a project-specific lint plugin baked into that repo's contribution rules). That's not really this marketplace's situation, so prefer the user-level file above unless you have a specific repo that needs to force it.
+
+## Contributing a new plugin or skill
+
+1. Add a plugin folder under `plugins/<your-plugin>/` with a `.claude-plugin/plugin.json` manifest and your `skills/`, `commands/`, `agents/`, or `hooks/` inside it.
+2. Register it in the top-level [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json) `plugins` array.
+3. Open a PR. Once merged, teammates get it via `/plugin marketplace update claude-skills` (or automatically, if they have `autoUpdate` on).
+
+> **Do not add a `version` field** to `plugin.json` or to the marketplace entry. This marketplace intentionally tracks latest by git commit — a pinned `version` freezes users on the cached copy until it's manually bumped, so new commits would silently fail to reach anyone.
+
+See the [Claude Code plugins docs](https://docs.claude.com/en/docs/claude-code/plugins) and [plugin marketplaces docs](https://docs.claude.com/en/docs/claude-code/plugin-marketplaces) for manifest details.

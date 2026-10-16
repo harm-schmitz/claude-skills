@@ -1,0 +1,8 @@
+{
+  "name": "wiki-interviewer-plugin",
+  "description": "Writes wikis, READMEs, onboarding docs, ADRs, and runbooks by interviewing the user instead of generating content from the code alone — the doc is compiled from the user's own words, not an AI's paraphrase of what the code does.",
+  "author": {
+    "name": "harm-schmitz",
+    "email": "harm.schmitz@acture.nl"
+  }
+}
